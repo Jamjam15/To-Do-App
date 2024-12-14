@@ -1,13 +1,39 @@
 #Import Libraries
 import tkinter as tk
+import json
+import os
 window = tk.Tk()
 
 #Main Window
 window.title("To Do List")
 window.geometry("400x500")
 
+#Save Function
+def save_tasks():
+    with open('tasks.json', 'w') as file:
+        json.dump(tasks, file)
+    print("Tasks saved.")
+
+#Load Function
+def load_tasks():
+    if os.path.exists('tasks.json'):
+        with open('tasks.json', 'r') as file:
+            loaded_tasks = json.load(file)
+        print("Tasks loaded.")
+        return loaded_tasks
+    else:
+        return []
+
 #Lists
-tasks = []
+tasks = load_tasks()
+
+#Show To Do Lists
+listbox = tk.Listbox(window)
+
+
+#Show Saved Tasks in Listbox
+for task in tasks:
+    listbox.insert(tk.END, task)
 
 #Title
 label = tk.Label(window, text="To Do List")
@@ -33,6 +59,7 @@ def search_task():
             if each_task.lower() == search.lower():
                 listbox.select_set(index)
                 listbox.see(index)
+                save_tasks()
                 return
             
         print("Task not found.")
@@ -42,10 +69,8 @@ def search_task():
 search_button = tk.Button(window, text="Search", command=search_task)
 search_button.pack()
 
-#Show To Do Lists
-listbox = tk.Listbox(window)
+#Listbox
 listbox.pack(pady=5)
-
 
 #Button Functions
 #Add Function
@@ -55,6 +80,7 @@ def add_task():
         tasks.append(task)
         listbox.insert(tk.END, task)
         entry.delete(0, tk.END)
+        save_tasks()
 
 #Delete Function
 def delete_task():
@@ -62,6 +88,7 @@ def delete_task():
     if selected:
         listbox.delete(selected)
         tasks.pop(selected[0])
+        save_tasks()
 
 #Mark as Done Function
 def completed_task():
@@ -71,11 +98,13 @@ def completed_task():
         tasks[task_index] += " (Completed)"
         listbox.delete(task_index)
         listbox.insert(task_index, tasks[task_index])
+        save_tasks()
 
 #Clear All Task Function
 def clear_task():
     tasks.clear()
     listbox.delete(0, tk.END)
+    save_tasks()
 
 
 #Add Button
@@ -93,6 +122,7 @@ complete_button.pack()
 #Clear All Task Button
 clear_button = tk.Button(window, text="Clear All Task", command=clear_task)
 clear_button.pack()
+
 
 #Run Program
 window.mainloop()
