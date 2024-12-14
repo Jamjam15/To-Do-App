@@ -34,8 +34,8 @@ def search_task():
                 listbox.select_set(index)
                 listbox.see(index)
                 return
-            else:
-                print("Task not found.")
+            
+        print("Task not found.")
 
 
 #Search Tasks Button
